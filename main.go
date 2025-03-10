@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"strings"
 	"time"
@@ -49,8 +51,23 @@ func generateUserAgent() string {
 	return fmt.Sprintf(browser, os, randomInt(60, 120), randomInt(0, 9999), randomInt(0, 999))
 }
 
+var amount = flag.Int("amount", 1, "amount of user agents to generate")
+var filename = flag.String("file", "", "filename to write to")
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	fmt.Println(generateUserAgent())
+	flag.Parse()
+	if *filename != "" {
+		data := make([]byte, 0)
+		for i := 0; i < *amount; i++ {
+			data = append(data, []byte(generateUserAgent()+"\n")...)
+		}
+		ioutil.WriteFile(*filename, data, 0644)
+	} else {
+		for i := 0; i < *amount; i++ {
+			fmt.Println(generateUserAgent())
+		}
+	}
 }
+
 
